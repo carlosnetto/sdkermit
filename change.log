@@ -1,0 +1,106 @@
+01/Set/89 [TCarlos]
+
+   Versao inicial
+   
+05/Set/89 [TCarlos]
+
+   "Mudanca no modulo terminal."
+   
+   Arquivos Alterados: TERMINAL.C
+
+   Antes, quando o keypad estava em modo numerico, a tecla "PrtSc" produzia
+   um asterisco ('*'), e quando estava em modo aplicacao, a sequencia de carac-
+   teres correspondente `a virgula do keypad do VT100. Para o modo aplicacao
+   nada mudou, mas para o modo numerico, a tecla "PrtSc" produz uma
+   virgula (',').
+
+        ------------------------------------------------------------
+        |                   | Numeric Mode |    Application Mode   |
+        ============================================================
+        | Versao antiga     |      *       |       Keypad(,)       |
+        ------------------------------------------------------------
+        | Versao atualizada |      ,       |       Keypad(,)       |
+        ------------------------------------------------------------
+
+   onde keypad(,) indica a sequencia produzida pelo VT100 ao pressionar a
+   tecla ',' do keypad em modo aplicacao.
+
+
+05/Set/89 [TCarlos]
+
+   "Mudanca do atributo de video da saida do programa"
+
+   Arquivos alterados: CONFIG.C (FinishKermit), KER.C (main)
+
+   Quando 'e digitado o comando CLS do COMMAND.COM, a tela 'e limpa
+   com o atributo "7". O SDKermit faz isso quando executa o command.com
+   e quando tem sua execucao terminada.
+
+
+03/Out/89 [TCarlos]
+
+   "Problemas de compatibilidade com a BIOS do NEXUS; mau uso do geninterrupt"
+
+   Arquivos alterados: SCRKER (quase todas funcoes), TERMINAL (todas
+        as funcoes que usavam o geninterrupt), KEYBOARD, SDKER.PRJ e MAKEFILE
+
+   Arquivos criados: BIOS.C, BIOS.E
+
+   A pseudo-funcao "geninterrupt" ativa um tratador de interrupcao que nao
+   necessariamente salva os registradores usados pelo TurboC (SI, DI e BP).
+   Esse fato nao era levado em conta pelo SDKermit, que assumia  que  estes
+   registradores nao eram alterados. Isso de fato acontecia nas BIOS da mai-
+   oria dos computadores... mas no NEXUS nao.
+   O modulo BIOS criou duas funcoes: BiosKey e BiosVideo (nao confunda a pri-
+   meira com "bioskey", do Turbo C). A primeira gera a interrupcao dos servi-
+   cos de teclado da bios, e a segunda dos servicos de video. Ambas se preo-
+   cupam em preservar os malditos registradores.
+
+11/Out/89 [TCarlos]
+
+   "Redirecionamento do teclado para um arquivo"
+   
+   Apenas para a versao da SD (MYSDKER.EXE), foi implementado a facilidade
+   de redirecionar o teclado para um arquivo do tipo texto. Isto permite que,
+   por exemplo, o fonte de um kermit para UNIX seja enviado para uma maquina
+   que ainda nao possui o kermit.
+
+05/Jan/90 [Tcarlos]
+
+   "Erro na negociacao do Binary Quote"
+   
+     A negociacao do Binary Quote (&) era feita da mesma forma que o Control
+   Quote (#). Cada lado passava para o outro o caractere desejado e pronto.
+     Isso (por nao ser correto) apresentou problemas na transferencia de ar-
+   quivos entre o SDKermit e o C-Kermit(4E).
+     Nao foi encontrada nenhuma documentacao (correta) sobre as regras dessa
+   negociacao. Entretanto, analisando  o  comportamento  do  C-Kermit  e  do
+   MS-Kermit foi possivel chegar a uma conclusao que se verificou em todos os
+   testes.
+
+      -------------------------------------------------------------------
+      |   Envia   |    Recebe    |   Conclusao                          |
+      ===================================================================
+      |     Y     |      Y       |   Pode transmitir binario, sem quote |
+      |     Y     |      N+      |   Nao pode transmitir binario        |
+      |     Y     |      &       |   Pode transmitir binario, com quote |
+      |     &     |      Y       |   Pode transmitir binario, com quote |
+      |     &     |      N+      |   Nao pode transmitir binario        |
+      |     &     |      &       |   Pode transmitir binario, com quote |
+      |     &     |     outro*   |   O quote recebido e' diferente. Nao |
+      |           |              |   pode transmitir binario.           |
+      -------------------------------------------------------------------
+
+      -------------------------------------------------------------------
+      |   Recebe  |    Envia     |   Conclusao                          |
+      ===================================================================
+      |     Y     |      Y       |   Pode transmitir binario, sem quote |
+      |     Y     |      &       |   Pode transmitir binario, com quote |
+      |     &     |      Y       |   Situacao impossivel para o SDKermit|
+      |     &     |      &       |   Pode transmitir binario, com quote |
+      |    outro* |     outro*   |   Pode transmitir binario, com quote |
+      |     N+    |      N       |   Nao pode transmitir binario        |
+      -------------------------------------------------------------------
+   
+   *) "outro" indica qualquer outro quote valido
+   +) "N" indica qualquer caractere invalido como quote e diferente do 'Y'

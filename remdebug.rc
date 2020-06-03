@@ -1,0 +1,7 @@
+find-file "turboc.cfg"
+search-forward "-v"
+beginning-of-line
+kill-to-end-of-line
+kill-to-end-of-line
+insert-string "-ms~n"
+quick-exit

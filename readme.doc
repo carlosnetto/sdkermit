@@ -1,0 +1,10 @@
+. Nao sei se o Menutree funciona quando existe mais de um nivel de profundi-
+  dade. Este nao e' o caso do SDKermit, mas e' interessante verificar isso.
+
+. No newmenu, falta fazer o DrawRule, EraseRule, ...
+
+. No scrker, para scrollupbox, downbox, o atributo corrente e' lido via
+  gettextinfo( ... ). O problema e' que esta informacao e' mantida em uma
+  variavel local, prontinha!
+
+. Que tal enchugar estes comandos nao usados do scrker, ....
